@@ -1,0 +1,200 @@
+<html>
+<head>
+	<title>Sprig electric car range estimation with directions</title>
+	<link href="../static/default2.css" rel="stylesheet">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script>
+		var directionsDisplay;
+		$(document).ready(
+			function(){
+				//google.maps.event.addDomListener(window, 'load', initialize);
+				initialize()
+				calcRoute()
+			})
+	
+		
+		var directionsService = new google.maps.DirectionsService();
+		var map;
+
+		function initialize() {
+		  directionsDisplay = new google.maps.DirectionsRenderer();
+		  var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+		  var mapOptions = {
+			zoom:7,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			center: chicago
+		  }
+		  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		  directionsDisplay.setMap(map);
+		}
+		
+		
+		
+		function calcRoute() {
+		  var start = document.getElementById('dir_bar_input_orig').value;
+		  var end = document.getElementById('dir_bar_input_dest').value;
+		  var request = {
+			  origin:start,
+			  destination:end,
+			  durationInTraffic:true,
+			  travelMode: google.maps.DirectionsTravelMode.DRIVING
+		  };
+  		directionsService.route(request, directionsReceived);
+  		
+		  $.ajax({url:'/calcPowerUsage', type:'POST', data:JSON.stringify({'start':start,'dest':end}), contentType:'application/json',success:routeDataReceived})
+		}
+		
+		function directionsReceived(response, status){
+			 if (status == google.maps.DirectionsStatus.OK) {
+			 console.log("dir is " + directionsDisplay)
+			  directionsDisplay.setDirections(response);
+			  //console.log(response)
+			  var routeDist = response['routes'][0]['legs'][0]['distance']['value']
+			  $('#routeDist').html(routeDist/1609.34)
+	  
+			}
+		}
+		
+		function routeDataReceived(data){
+			var routeData = data['routeData']
+			var totalPowerUsage = Math.floor(data['totalPowerUsage']*100)/100
+			var oneWayUsage = Math.floor(data['oneWayUsage']*100)/100
+			var returnUsage = Math.floor((totalPowerUsage-oneWayUsage)*100)/100
+			//var startDetails = data['startDetails']
+			//var endDetails = data['endDetails']
+			$('#one_way_usage').html(oneWayUsage)
+			$('#return_usage').html(returnUsage)
+			$('#rt_usage').html(totalPowerUsage)
+			
+			$('#directions_list_wr').html('')
+			
+			$('#directions_list_wr').append("<div id='dir_start' class='dir_start_end'><div class='dir_address'>"+"Start Address"+"</div><div class='dir_city_zip'>"+"Start City"+"</div></div>")
+			
+			for(var i=0;i<routeData.length;i++){
+				var step = routeData[i]
+				var description = step['routeDescription'].toLowerCase()
+				var turnDiv = document.createElement('div')
+				if(description.search('left')>-1){
+					$(turnDiv).attr('class', 'dir_step_turn_lt')
+					$(turnDiv).html('turn left')
+				}
+				else if(description.search('right')>-1){
+					$(turnDiv).attr('class', 'dir_step_turn_rt')
+				}
+				else if(description.search('continue')>-1){
+					$(turnDiv).html('continue')
+				}
+				else if(description.search('merge')>-1){
+					$(turnDiv).html('merge')
+				}
+				else
+					$(turnDiv).html('something else')
+					
+				$('#directions_list_wr').append("<div class='directions_step'>" + '<div class="dir_step_turn dir_step_turn_rt"></div>' +"<div class='dir_step_desc'>" +step['routeDescription']+ "</div><div class='dir_step_nrg'>" + step['powerUsage'] + "</div><div class='dir_step_mileage'>" + step['miles'] + " mi.</div></div>");
+				//$('#directions_list_wr').append("Hello");
+			}
+			
+			$('#directions_list_wr').append("<div id='dir_end' class='dir_start_end'><div class='dir_address'>"+"End Address"+"</div><div class='dir_city_zip'>"+"End City"+"</div></div>")
+		
+			var battRemaining = $('#charge_level').val()
+			$('#can_you_make_it').removeClass('can_make_it_roundtrip')
+			$('#can_you_make_it').removeClass('can_make_it_one_way')
+			$('#can_you_make_it').removeClass('cant_make_it')
+			if(!battRemaining){
+				$('#can_you_make_it').html("Enter a charge level to determine if you can make it")
+			}
+			else if(battRemaining > totalPowerUsage){
+				$('#can_you_make_it').addClass('can_make_it_roundtrip')
+				$('#can_you_make_it').html("You have enough charge to make it there and back.")
+			}
+			else if(battRemaining > oneWayUsage){
+				$('#can_you_make_it').addClass('can_make_it_one_way')
+				$('#can_you_make_it').html("You have enough charge to make it there, but not back.")
+			}
+			else{
+				$('#can_you_make_it').addClass('cant_make_it')
+				$('#can_you_make_it').html("You don't have enough charge to make it to your destination.")
+			}	
+			
+		}
+		
+		var xhr
+		function toggleChargeSrc(){
+			xhr = $.ajax({url:'/getCarData', type:'GET', success:carDataReceived})
+		}
+
+		function carDataReceived(data){
+			var battRemaining = data['batteryRemaining']
+			$('#charge_level').val(battRemaining)
+		}
+		
+	</script>
+</head>
+
+<body>
+
+	<div id="header">
+		<div id="header_content_wr">
+			<a href="./"><div id="h_col_1" class="h_col"></div></a>
+			<div id="h_col_2" class="h_col"></div>
+			<div id="h_col_3" class="h_col">Log In &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sign Up</div>		
+		</div>
+	</div><!-- end header div -->
+	<div id="header_banner"></div>
+	
+	<div id="main_content_wr">
+		<div id="directions_bar" class="panel">
+			<div id="update_directions_bar">
+				<input type='text' value="{{chargeLevel}}" id='charge_level' class="address_form" name="start_address" placeholder="Charge Level" maxlength="2">
+				<button type="getCW" id="getCW_button" onclick="javascript:toggleChargeSrc()" class="main_content_button">Get from CarWings</button>
+				<input type="text" value="{{start}}" id="dir_bar_input_orig" class="address_form" name="start_address" placeholder="Origin">
+				<input type="text" value="{{dest}}" id="dir_bar_input_dest" class="address_form" name="dest_address" placeholder="Destination">
+				<button id="get_dir_button" class="main_content_button" onclick='javascript:calcRoute()'>Update Directions!</button>
+			</div>
+		</div><!-- end directions_bar -->
+		
+		<div id="left_sidebar">
+		
+			<div id="traffic_light" class="panel">
+				<div class="panel_title">Sprig-O-Meter</div>
+				<div id="can_you_make_it" class="panel_content can_make_it_roundtrip">
+					You have enough charge to make it there and back.
+				</div>
+			</div><!-- end traffic_light -->
+			
+			<div id="route_details" class="panel">
+				<div class="panel_title">Route Details</div>
+				<div id="route_det_usage_head" class="route_det_usage_line">Battery Usage<span class="route_det_usage_val" id="asdf">% Full Charge</span></div>
+				<div class="route_det_usage_line route_there">There<span class="route_det_usage_val" id="one_way_usage"></span></div>
+				<div class="route_det_usage_line route_back">Back<span id="return_usage" class="route_det_usage_val"></span></div>
+				<div class="route_det_usage_line route_rt">Round-Trip<span id="rt_usage" class="route_det_usage_val"></span></div>
+			</div><!-- end route_details -->
+		
+			<div id="map_wr" class="panel">
+				<div class="panel_title">Map</div>
+				<div id="map-canvas"></div>
+			</div>		
+		</div><!-- end left_sidebar -->
+		<div id="directions_list_wr">
+			
+		</div><!-- end directions_list_wr -->
+	
+	</div><!-- end main_content" -->
+	<div id="footer">
+		<ul>
+			<li class="first_li">About</li>
+			<li>Privacy</li>
+			<li>Contact</li>
+			<li>Jobs</li>
+			<li>Help Center</li>
+			<li>News</li>
+			<li>Legal</li>
+			<li>Directory</li>
+			<li>Our Products</li>
+		</ul>
+		<div id="copyright">&copy 2013 Monza, Inc. All rights reserved.</div>
+	</div><!-- end footer -->
+
+</body>
+</html>

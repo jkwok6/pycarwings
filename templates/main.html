@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Leaf Guess-O-Meter 2.0</title>
+    <link href="../static/default2.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places&language=en-US"></script>
+
+    <style>
+    .routeTitle{
+    	
+    }
+    .routeDetail{
+    
+    }
+    </style>
+    <script>
+
+function sendToDirections(){
+	var start = $('#start_address').val()
+	var dest = $('#dest_address').val()
+	var chargeLevel = $('#charge_level').val()
+	document.location.href = encodeURI('/directions-list?start='+start+'&dest='+dest+'&chargeLevel='+chargeLevel)
+}
+
+
+var xhr
+function toggleChargeSrc(){
+	$("#loading_cw_wait").slideDown();
+	//$("#getCW_button").attr("disabled", true);
+	xhr = $.ajax({url:'/getCarData', type:'GET', success:carDataReceived})
+}
+
+function carDataReceived(data){
+	var battRemaining = data['batteryRemaining']
+	$("#loading_cw_wait").slideUp();
+	//$("#getCW_button").attr("disabled", false);
+	$('#charge_level').val(battRemaining)
+}
+</script>
+</head>
+ 
+<body>
+ 
+    <!-- <div id="map-canvas"></div> -->
+	<div id="header" class="header_homepage">
+		<div id="header_content_wr">
+			<div id="h_col_1" class="h_col"></div>
+			<div id="h_col_3" class="h_col">Log In &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sign Up</div>		
+		</div>	
+		</div>
+	</div><!-- end header div -->
+		
+	<div id="main_content" class="main_content_homepage">
+		<!--<div id="loading_cw_wait">Please wait... <br><br>Connecting to your car takes about 20 seconds.</div>-->
+		<div class="main_data_entry">
+			
+			<div id="main_data_entry_header">
+				<h1 class="main_content_headline">Let's put an end to range anxiety.</h1>
+			</div>
+			
+			<div id="main_data_entry_inputs">
+				<h2 class="main_content_subhead">Step One: Enter or import your charge level.</h2>
+				<h2 class="main_content_subhead" id="route_subhead">Step Two: Tell us your route.</h2>
+			
+				<div id="update_directions_bar_homepage" class="input_form_homepage">
+					<fieldset id="step_one">
+					<input type='text' id='charge_level' class="address_form" placeholder="Charge Level" maxlength="2">
+					<button onclick='javascript:toggleChargeSrc();' type="getCW" id="getCW_button" class="main_content_button">Get from CarWings</button>
+					<div id="loading_cw_wait"><b>Please wait...</b><br><br>Connecting to your car takes about 20 seconds.</div>
+					
+					</fieldset>
+					<fieldset id="step_two">
+					<input type="text" class="address_form start_dest_input_homepage" id='start_address' name="start_address" placeholder="Origin">
+					<input type="text" class="address_form start_dest_input_homepage" id='dest_address' name="dest_address" placeholder="Destination">
+					<script>
+					var autocomplete_st = new google.maps.places.Autocomplete($("#start_address")[0], {});
+					var autocomplete_dest = new google.maps.places.Autocomplete($("#dest_address")[0], {});
+					google.maps.event.addListener(autocomplete_st, 'place_changed', function() {
+						var place_st = autocomplete_st.getPlace();
+						console.log(place_st.address_components);
+					});
+					google.maps.event.addListener(autocomplete_dest, 'place_changed', function () {
+						var place_dest = autocomplete_dest.getPlace();
+						console.log(place_dest.address_components);
+					});
+					</script>
+					
+					<button id="get_dir_button" class="main_content_button" onclick='sendToDirections()'>GO!</button>
+					</fieldset>
+				</div>
+		</div><!-- end directions_bar -->
+			</div><!-- end main_data_entry_inputs -->
+		</div><!-- end main_data_entry div -->
+		
+	</div><!-- end main_content div-->
+	
+	<div id="footer">
+		<ul>
+			<li class="first_li">About</li>
+			<li>Privacy</li>
+			<li>Contact</li>
+			<li>Jobs</li>
+			<li>Help Center</li>
+			<li>News</li>
+			<li>Legal</li>
+			<li>Directory</li>
+			<li>Our Products</li>
+		</ul>
+		<div id="copyright">&copy 2013 Monza, Inc. All rights reserved.</div>
+	</div><!-- end footer -->
+	
+</body>
+</html>
