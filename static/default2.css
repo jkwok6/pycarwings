@@ -23,12 +23,7 @@ margin-bottom: 30px;
 
 h2 {
 	font-size: 100%;
-	float: left;
 	margin-bottom: 10px; 
-}
-
-#route_subhead {
-    margin-left: 95px;
 }
 
 b {
@@ -98,6 +93,7 @@ b {
 
 .main_content_homepage {
 	height: 687px;
+	padding: 0 15px 0 25px;
 	background: url("bg.jpg") no-repeat center top; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
@@ -125,25 +121,16 @@ b {
 .main_data_entry {
     position: relative;
     top: 300px;
-	width: 1050px;
+	max-width: 1050px;
+	min-width: 640px;
 	margin-left: auto; 
 	margin-right: auto;
 }
 
-/* #loading_cw_wait {
-    background: url("../static/loading.gif") no-repeat scroll 0 0 white;
-    border: 10px solid lightblue;
-    border-radius: 10px 10px 10px 10px;
-    display: none;
-    font-family: helvetica;
-    height: 100px;
-    left: 380px;
-    padding: 10px;
-    position: absolute;
-    top: 360px;
-    width: 280px;
-    z-index: 999;
-} */
+#step_one_fieldset, #step_two_fieldset {
+	float: left;
+	margin-bottom: 30px;
+}
 
 #loading_cw_wait {
     background: url("../static/loader.png") no-repeat scroll 15% 50% transparent;

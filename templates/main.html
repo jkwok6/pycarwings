@@ -63,37 +63,36 @@ function carDataReceived(data){
 			</div>
 			
 			<div id="main_data_entry_inputs">
-				<h2 class="main_content_subhead">Step One: Enter or import your charge level.</h2>
-				<h2 class="main_content_subhead" id="route_subhead">Step Two: Tell us your route.</h2>
-			
-				<div id="update_directions_bar_homepage" class="input_form_homepage">
-					<fieldset id="step_one">
-					<input type='text' id='charge_level' class="address_form" placeholder="Charge Level" maxlength="2">
-					<button onclick='javascript:toggleChargeSrc();' type="getCW" id="getCW_button" class="main_content_button">Get from CarWings</button>
-					<div id="loading_cw_wait"><b>Please wait...</b><br><br>Connecting to your car takes about 20 seconds.</div>
-					
+					<fieldset id="step_one_fieldset">
+					<h2 class="main_content_subhead">Step One: Enter or import your charge level.</h2>
+						<div id="step_one">
+							<input type='text' id='charge_level' class="address_form" placeholder="Charge Level" maxlength="2">
+							<button onclick='javascript:toggleChargeSrc();' type="getCW" id="getCW_button" class="main_content_button">Get from CarWings</button>
+							<div id="loading_cw_wait"><b>Please wait...</b><br><br>Connecting to your car takes about 20 seconds.</div>
+						</div><!-- end step_one div-->
 					</fieldset>
-					<fieldset id="step_two">
-					<input type="text" class="address_form start_dest_input_homepage" id='start_address' name="start_address" placeholder="Origin">
-					<input type="text" class="address_form start_dest_input_homepage" id='dest_address' name="dest_address" placeholder="Destination">
-					<script>
-					var autocomplete_st = new google.maps.places.Autocomplete($("#start_address")[0], {});
-					var autocomplete_dest = new google.maps.places.Autocomplete($("#dest_address")[0], {});
-					google.maps.event.addListener(autocomplete_st, 'place_changed', function() {
-						var place_st = autocomplete_st.getPlace();
-						console.log(place_st.address_components);
-					});
-					google.maps.event.addListener(autocomplete_dest, 'place_changed', function () {
-						var place_dest = autocomplete_dest.getPlace();
-						console.log(place_dest.address_components);
-					});
-					</script>
 					
-					<button id="get_dir_button" class="main_content_button" onclick='sendToDirections()'>GO!</button>
+					<fieldset id="step_two_fieldset">
+					<h2 class="main_content_subhead" id="route_subhead">Step Two: Tell us your route.</h2>
+						<div id="step_two">
+							<input type="text" class="address_form start_dest_input_homepage" id='start_address' name="start_address" placeholder="Origin">
+							<input type="text" class="address_form start_dest_input_homepage" id='dest_address' name="dest_address" placeholder="Destination">
+							<script>
+							var autocomplete_st = new google.maps.places.Autocomplete($("#start_address")[0], {});
+							var autocomplete_dest = new google.maps.places.Autocomplete($("#dest_address")[0], {});
+							google.maps.event.addListener(autocomplete_st, 'place_changed', function() {
+								var place_st = autocomplete_st.getPlace();
+								console.log(place_st.address_components);
+							});
+							google.maps.event.addListener(autocomplete_dest, 'place_changed', function () {
+								var place_dest = autocomplete_dest.getPlace();
+								console.log(place_dest.address_components);
+							});
+							</script>
+							<button id="get_dir_button" class="main_content_button" onclick='sendToDirections()'>GO!</button>
+						</div><!-- end step_two div-->
 					</fieldset>
-				</div>
-		</div><!-- end directions_bar -->
-			</div><!-- end main_data_entry_inputs -->
+			</div><!-- end directions_bar -->
 		</div><!-- end main_data_entry div -->
 		
 	</div><!-- end main_content div-->
@@ -110,7 +109,7 @@ function carDataReceived(data){
 			<li>Directory</li>
 			<li>Our Products</li>
 		</ul>
-		<div id="copyright">&copy 2013 Monza, Inc. All rights reserved.</div>
+		<div id="copyright">&copy 2013 Halea, Inc. All rights reserved.</div>
 	</div><!-- end footer -->
 	
 </body>
