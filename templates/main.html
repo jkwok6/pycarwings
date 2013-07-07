@@ -88,6 +88,24 @@ function carDataReceived(data){
 								var place_dest = autocomplete_dest.getPlace();
 								console.log(place_dest.address_components);
 							});
+							
+							// Code for the input accordion effect
+							var input_accordion_time = 500;
+							var input_w_big = 300;
+							var input_w_sm = 40;
+							var input_w_half = (input_w_big + input_w_sm) / 2;
+							$('#start_address').focus( function() {
+								$("#start_address").animate( { width:input_w_big }, input_accordion_time); 
+								$("#dest_address").animate( { width:input_w_sm }, input_accordion_time);
+							});
+							$('#dest_address').focus( function() {
+								$("#dest_address").animate( { width:input_w_big }, input_accordion_time); 
+								$("#start_address").animate( { width:input_w_sm }, input_accordion_time);
+							});
+							$('body').click( function() {
+								$("#start_address").animate( { width:input_w_half }, input_accordion_time); 
+								$("#dest_address").animate( { width:input_w_half }, input_accordion_time);
+							});
 							</script>
 							<button id="get_dir_button" class="main_content_button" onclick='sendToDirections()'>GO!</button>
 						</div><!-- end step_two div-->
