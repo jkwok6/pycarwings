@@ -155,4 +155,6 @@ def calcStepUsageElevation(step, elevations, counter):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+	# enable the app to be visible to other devices on the network
+	app.run(host='0.0.0.0')
