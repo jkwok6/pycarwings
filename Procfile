@@ -1,1 +1,1 @@
-web: python main.py -i json-rpc
+web: python main.py
