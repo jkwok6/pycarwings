@@ -3,7 +3,8 @@
 	<title>Sprig electric car range estimation with directions</title>
 	<link href="../static/default2.css" rel="stylesheet">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places&language=en-US"></script>
 	<script>
 		var directionsDisplay;
 		$(document).ready(
@@ -150,6 +151,18 @@
 				<button type="getCW" id="getCW_button" onclick="javascript:toggleChargeSrc()" class="main_content_button">Get from CarWings</button>
 				<input type="text" value="{{start}}" id="dir_bar_input_orig" class="address_form" name="start_address" placeholder="Origin">
 				<input type="text" value="{{dest}}" id="dir_bar_input_dest" class="address_form" name="dest_address" placeholder="Destination">
+                <script>
+                    var autocomplete_st = new google.maps.places.Autocomplete($("#dir_bar_input_orig")[0], {});
+                    var autocomplete_dest = new google.maps.places.Autocomplete($("#dir_bar_input_dest")[0], {});
+                    google.maps.event.addListener(autocomplete_st, 'place_changed', function() {
+                                        var place_st = autocomplete_st.getPlace();
+                                        console.log(place_st.address_components);
+                                                      });
+                    google.maps.event.addListener(autocomplete_dest, 'place_changed', function () {
+                                var place_dest = autocomplete_dest.getPlace();
+                                                      console.log(place_dest.address_components);
+                                                      });
+                </script>
 				<button id="get_dir_button" class="main_content_button" onclick='javascript:calcRoute()'>Update Directions!</button>
 			</div>
 		</div><!-- end directions_bar -->
