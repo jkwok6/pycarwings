@@ -2,7 +2,7 @@ from flask import Flask, session, redirect, render_template, request, flash, jso
 from directions import requestRoute, getElevations
 app = Flask(__name__)
 import yaml
-from pycarwings2 import connection, userservice, vehicleservice
+from pycarwings import connection, userservice, vehicleservice
 import time
 from pdb import set_trace as trace
 
